@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <script src="../three.min.js"></script>
+  <script src="../GLTFLoader.js"></script>
+  <script src="../OrbitControl.js"></script>
+</head>
+
+<body>
+  <script>
+    var scene, sceneLight, camera, renderer, materialArray = [];
+
+    function initScene() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xdddddd);
+      camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 10000);
+      camera.position.set(-900, -200, -900);
+      scene.add(camera);
+
+
+      let texture_ft = new THREE.TextureLoader().load("assets/arid_ft.jpg");
+      let texture_bk = new THREE.TextureLoader().load("assets/arid_bk.jpg");
+      let texture_up = new THREE.TextureLoader().load("assets/arid_up.jpg");
+      let texture_dn = new THREE.TextureLoader().load("assets/arid_dn.jpg");
+      let texture_rt = new THREE.TextureLoader().load("assets/arid_rt.jpg");
+      let texture_lf = new THREE.TextureLoader().load("assets/arid_lf.jpg");
+      materialArray.push(new THREE.MeshBasicMaterial({
+        map: texture_ft
+      }));
+      materialArray.push(new THREE.MeshBasicMaterial({
+        map: texture_bk
+      }));
+      materialArray.push(new THREE.MeshBasicMaterial({
+        map: texture_up
+      }));
+      materialArray.push(new THREE.MeshBasicMaterial({
+        map: texture_dn
+      }));
+      materialArray.push(new THREE.MeshBasicMaterial({
+        map: texture_rt
+      }));
+      materialArray.push(new THREE.MeshBasicMaterial({
+        map: texture_lf
+      }));
+
+      for (let i = 0; i < 6; i++) {
+        materialArray[i].side = THREE.BackSide;
+      }
+
+      let skyBoxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
+      let skyBox = new THREE.Mesh(skyBoxGeo, materialArray);
+      scene.add(skyBox);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setClearColor(0x000000, 1);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.append(renderer.domElement);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.addEventListener("change", renderer);
+      controls.minDistance = 500;
+      controls.maxDistance = 1500;
+
+      animate();
+    }
+
+    function animate() {
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    initScene();
+  </script>
+</body>
+
+</html>
