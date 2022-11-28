@@ -5,52 +5,51 @@
   <meta charset=UTF-8 />
   <script src="../three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
   <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 
 <body>
   <script>
+    var obj;
     var scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
 
     var renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     $('body').append(renderer.domElement);
 
-    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const boxMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cubeBoxGeometry = new THREE.Mesh(boxGeometry, boxMaterial);
-    scene.add(cubeBoxGeometry);
+    const gltflLoader = new THREE.GLTFLoader();
+    gltflLoader.load('assets/3.glb', function (gltf) {
+      obj = gltf.scene;
+      obj.position.z = 1;
 
+      obj.traverse(function (_obj) {
+        if (obj.isMesh) {
+          obj.material.color.set(0xFFB6C1);
+        }
+      });
+      scene.add(obj);
+    },
+      // called while loading is progressing
+      function (xhr) {
 
-    const circleGeometry = new THREE.CircleGeometry(1, 50);
-    const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const circle = new THREE.Mesh(circleGeometry, circleMaterial);
-    circle.position.x = 2;
-    scene.add(circle);
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-    const torusGeometry = new THREE.TorusGeometry(4, 1, 30, 200, Math.PI * 2);
-    const torusMaterial = new THREE.MeshBasicMaterial({ color: 0x123456 });
-    const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-    torus.position.x = 1;
-    scene.add(torus);
+      },
+      // called when loading has errors
+      function (error) {
 
-    camera.position.z = 7;
+        console.log('An error happened');
+      }
+    );
 
-
+    camera.position.z = 20;
 
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      cubeBoxGeometry.rotation.x += 0.01;
-      cubeBoxGeometry.rotation.y += 0.01;
-
-      circle.rotation.x -= 0.01;
-      circle.rotation.y += 0.01;
-
-      torus.rotation.x -= 0.01;
-      torus.rotation.y -= 0.01;
-
     }
     animate();
   </script>
